@@ -99,6 +99,38 @@ foreach my $path (@ARGV) {
     }
 }
 
+__END__
+
+=head1 NAME
+
+safename - rename files to safe filenames
+
+=head1 VERSION
+
+version 0.01
+
+=head1 SYNOPSIS
+
+    safename (-d | -e) [-r] [-t] [-v] [files or directories]
+
+=head1 OPTIONS
+
+    -d    decode from safe filenames
+    -e    encode to safe filenames
+    -r    rename files recursively
+    -t    don't actually rename files
+    -v    print all renamed files
+
+=head1 EXAMPLES
+
+Rename a file to a safe filename:
+
+    $ safename -e Foo.txt
+
+Rename a file from a safe filename:
+
+    $ safename -d {f}oo.txt
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2013 Bert Vanderbauwhede.
