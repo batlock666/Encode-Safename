@@ -1,5 +1,8 @@
 Revision history for Encode-Safename
 
+0.03    2013-11-16
+        - Refactor lexers into single lexer with start conditions
+
 0.02    2013-11-16
         - Add long options.
 
