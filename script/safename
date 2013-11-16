@@ -4,6 +4,101 @@ use 5.006;
 use strict;
 use warnings;
 
+use Encode qw(decode encode);
+use Encode::Safename;
+use File::Basename;
+use File::Find;
+use Getopt::Std;
+
+# constants
+use constant CMD_ENCODE => 'encode';
+use constant CMD_DECODE => 'decode';
+
+# process options from the command line
+my %options;
+getopts('edrtv', \%options);
+
+# process the command
+my $command;
+if ($options{'e'}) {
+    # encode
+    $command = CMD_ENCODE;
+}
+elsif ($options{'d'}) {
+    # decode
+    $command = CMD_DECODE;
+}
+else {
+    # missing command
+    die "missing command\n";
+}
+
+# process flags
+my $recursive = $options{'r'};
+my $testmode = $options{'t'};
+my $verbose = $options{'v'};
+
+sub _rename {
+    # process arguments
+    my $old = shift;
+    $old = decode('utf-8', $old);
+
+    # split into directory and filename
+    my $filename = basename($old);
+    my $directory = dirname($old);
+
+    my $new;
+
+    if ($command eq CMD_ENCODE) {
+        # try to encode the filename
+        $new = encode('safename', $filename, 1);
+        die "can't encode '$filename'" if $filename;
+        $new = "$directory/$new";
+    }
+    elsif ($command eq CMD_DECODE) {
+        # try to decode the filename
+        $new = decode('safename', $filename, 1);
+        die "can't decode '$filename'" if $filename;
+        $new = "$directory/$new";
+    }
+
+    # encode paths
+    $old = encode('utf-8', $old);
+    $new = encode('utf-8', $new);
+
+    if ($old ne $new) {
+        # old and new filename are not the same
+        if (! $testmode) {
+            # not in test mode
+            rename($old, $new);
+        }
+
+        if ($verbose) {
+            # verbose
+            print "'$old' -> '$new'\n";
+        }
+    }
+}
+
+foreach my $path (@ARGV) {
+    # process paths from the command line
+    if ($recursive && -d $path) {
+        # process paths recursively
+        finddepth({
+                no_chdir => 1,
+                wanted   => sub {
+                    _rename($File::Find::name);
+                },
+            },
+            $path,
+        );
+    }
+    else {
+        # process single path
+        _rename($path);
+    }
+}
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2013 Bert Vanderbauwhede.
