@@ -17,6 +17,7 @@ my $builder = Module::Build->new(
     },
     add_to_cleanup      => [ 'Encode-Safename-*' ],
     create_makefile_pl => 'traditional',
+    script_files => [ 'script/safename' ],
 );
 
 $builder->create_build_script();
