@@ -6,6 +6,7 @@ use Module::Build;
 my $builder = Module::Build->new(
     module_name         => 'Encode::Safename',
     license             => 'LGPL_3_0',
+    create_license      => 1,
     dist_author         => q{Bert Vanderbauwhede <batlock666@gmail.com>},
     dist_version_from   => 'lib/Encode/Safename.pm',
     dist_abstract       => 'An encoding for safe filenames.',
