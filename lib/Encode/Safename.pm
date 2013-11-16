@@ -85,7 +85,51 @@ Decoder for decoding safename.  See module L<Encode::Encoding>.
 
 =cut
 
+# lexer for decoding
+my $decode_lexer = Parse::Lex->new(
+    # uppercase characters
+    D_UPPER => (
+        '\{[a-z]+\}',
+        sub {
+            my $text = $_[1];
+            $text =~ s/\{(.*)\}/$1/;
+            return uc $text;
+        },
+    ),
+
+    # spaces
+    D_SPACES => (
+        '_+',
+        sub {
+            my $text = $_[1];
+            $text =~ tr/_/ /;
+            return $text;
+        },
+    ),
+
+    # safe characters
+    D_SAFE => '[a-z0-9\-+!\$%&\'@~#.,^]+',
+
+    # other characters
+    D_OTHER => (
+        '\([0-9a-f]+\)',
+        sub {
+            my $text = $_[1];
+            $text =~ s/\((.*)\)/$1/;
+            return pack('U', oct('0x' . $text));
+        },
+    ),
+);
+$decode_lexer->skip('');
+
 sub decode {
+    # process arguments
+    my ($self, $string, $check) = @_;
+
+    # apply the lexer for decoding to the string and return the result
+    my ($processed, $remaining) = $self->_process($decode_lexer, $string);
+    $_[1] = $remaining if $check;
+    return $processed;
 }
 
 =head2 encode STRING, CHECK
