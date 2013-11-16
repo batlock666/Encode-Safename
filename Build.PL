@@ -14,6 +14,7 @@ my $builder = Module::Build->new(
         'Test::More' => 0,
     },
     requires => {
+        'Encode::Encoding' => 0,
         'perl' => 5.006,
     },
     add_to_cleanup      => [ 'Encode-Safename-*' ],

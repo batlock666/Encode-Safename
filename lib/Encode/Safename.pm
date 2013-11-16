@@ -4,6 +4,10 @@ use 5.006;
 use strict;
 use warnings;
 
+use base qw(Encode::Encoding);
+
+__PACKAGE__->Define(qw(safename));
+
 =head1 NAME
 
 Encode::Safename - The great new Encode::Safename!
@@ -35,18 +39,22 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =head1 SUBROUTINES/METHODS
 
-=head2 function1
+=head2 decode STRING, CHECK
+
+Decoder for decoding safename.  See module L<Encode::Encoding>.
 
 =cut
 
-sub function1 {
+sub decode {
 }
 
-=head2 function2
+=head2 encode STRING, CHECK
+
+Encoder for encoding safename.  See module L<Encode::Encoding>.
 
 =cut
 
-sub function2 {
+sub encode {
 }
 
 =head1 AUTHOR
