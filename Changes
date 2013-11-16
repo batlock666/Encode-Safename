@@ -1,4 +1,7 @@
 Revision history for Encode-Safename
 
+0.02    2013-11-16
+        - Add long options.
+
 0.01    2013-11-16
         - First working version.
