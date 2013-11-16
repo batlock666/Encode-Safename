@@ -13,7 +13,7 @@ __PACKAGE__->Define(qw(safename));
 
 =head1 NAME
 
-Encode::Safename - The great new Encode::Safename!
+Encode::Safename - An encoding for safe filenames.
 
 =head1 VERSION
 
@@ -23,28 +23,68 @@ Version 0.01
 
 our $VERSION = '0.01';
 
-
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+An encoding to encode filenames to safe filenames, that is filenames
+that are valid on all filesystems.
 
-Perhaps a little code snippet.
-
+    use Encode qw(decode encode);
     use Encode::Safename;
 
-    my $foo = Encode::Safename->new();
-    ...
+    $encoded = encode('safename', 'Foo Bar Baz.txt');
+    # $encoded is now '{f}oo_{b}ar_{b}az.txt'
+    $decoded = decode('safename', $encoded);
+    # $decoded is now 'Foo Bar Baz.txt'
 
-=head1 EXPORT
+=head1 DESCRIPTION
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+A filename is encoded as follows:
 
-=head1 SUBROUTINES/METHODS
+=over 4
+
+=item *
+
+A range of uppercase characters is changed to lowercase characters,
+and put between braces.
+
+    'F'   -> '{F}'
+    'FOO' -> '{foo}'
+
+=item *
+
+A range of spaces is changed to underscores.
+
+    ' '   -> '_'
+    '   ' -> '___'
+
+=item *
+
+A range of safe characters (characters that are valid on all filesystems,
+excluding braces, parentheses, and underscores) is left unchanged.
+
+    'f'   -> 'f'
+    'foo' -> 'foo'
+
+=item *
+
+All other characters are changed to their Unicode codepoint in hexadecimal
+notation, and put between parentheses.
+
+    ':'  -> '(3a)'
+    ':?' -> '(3a)(3f)'
+
+=back
+
+Combined, this gives the following:
+
+    'FOO: Bar Baz.txt' -> '{foo}(3a)_{b}ar_{b}az.txt'
+
+=head1 METHODS
 
 =head2 _process LEXER, STRING
 
-Applies LEXER to STRING.  Returns both the processed and unprocessed parts.
+Applies LEXER to STRING.  Returns both the processed and unprocessed
+parts.
 
 For internal use only!
 
@@ -127,8 +167,8 @@ sub decode {
     my ($self, $string, $check) = @_;
 
     # apply the lexer for decoding to the string and return the result
-    my ($processed, $remaining) = $self->_process($decode_lexer, $string);
-    $_[1] = $remaining if $check;
+    my ($processed, $unprocessed) = $self->_process($decode_lexer, $string);
+    $_[1] = $unprocessed if $check;
     return $processed;
 }
 
@@ -187,19 +227,17 @@ Bert Vanderbauwhede, C<< <batlock666 at gmail.com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-encode-safename at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Encode-Safename>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
+Please report any bugs or feature requests to C<bug-encode-safename
+at rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Encode-Safename>.
+I will be notified, and then you'll automatically be notified of progress
+on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
     perldoc Encode::Safename
-
 
 You can also look for information at:
 
@@ -223,9 +261,10 @@ L<http://search.cpan.org/dist/Encode-Safename/>
 
 =back
 
-
 =head1 ACKNOWLEDGEMENTS
 
+Based on the module safefilename from Torsten Bronger's Bobcat project
+(L<https://launchpad.net/bobcat>).
 
 =head1 LICENSE AND COPYRIGHT
 
