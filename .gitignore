@@ -1,3 +1,8 @@
+# Vim
+*~
+*.swp
+
+# Distribution
 blib*
 Makefile
 Makefile.old
