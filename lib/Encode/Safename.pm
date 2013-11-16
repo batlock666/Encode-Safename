@@ -9,6 +9,11 @@ use Parse::Lex;
 
 use base qw(Encode::Encoding);
 
+use constant {
+    COND_ENCODE => 'ENCODE',
+    COND_DECODE => 'DECODE',
+};
+
 __PACKAGE__->Define(qw(safename));
 
 =head1 NAME
@@ -90,21 +95,79 @@ For internal use only!
 
 =cut
 
+Parse::Lex->inclusive('ENCODE', 'DECODE');
+my $_lexer = Parse::Lex->new(
+    # uppercase characters
+    'ENCODE:E_UPPER' => (
+        '[A-Z]+',
+        sub {
+            return '{' . lc $_[1] . '}';
+        },
+    ),
+    'DECODE:D_UPPER' => (
+        '\{[a-z]+\}',
+        sub {
+            my $text = $_[1];
+            $text =~ s/\{(.*)\}/$1/;
+            return uc $text;
+        },
+    ),
+
+    # spaces
+    'ENCODE:E_SPACES' => (
+        ' +',
+        sub {
+            my $text = $_[1];
+            $text =~ tr/ /_/;
+            return $text;
+        },
+    ),
+    'DECODE:D_SPACES' => (
+        '_+',
+        sub {
+            my $text = $_[1];
+            $text =~ tr/_/ /;
+            return $text;
+        },
+    ),
+
+    # safe characters
+    'SAFE' => '[a-z0-9\-+!\$%&\'@~#.,^]+',
+
+    # other characters
+    'ENCODE:E_OTHER' => (
+        '.',
+        sub {
+            return '(' . sprintf('%x', unpack('U', $_[1])) . ')';
+        },
+    ),
+    'DECODE:D_OTHER' => (
+        '\([0-9a-f]+\)',
+        sub {
+            my $text = $_[1];
+            $text =~ s/\((.*)\)/$1/;
+            return pack('U', oct('0x' . $text));
+        },
+    ),
+);
+$_lexer->skip('');
+
 sub _process {
     # process arguments
-    my ($self, $lexer, $string) = @_;
+    my ($self, $string, $condition) = @_;
 
     # initialize the lexer and the processed buffer
-    $lexer->from($string);
+    $_lexer->from($string);
+    $_lexer->start($condition);
     my $processed = '';
 
     while (1) {
         # infinite loop!
 
         # get the next token
-        my $token = $lexer->next;
+        my $token = $_lexer->next;
 
-        if ($lexer->eoi || (! $token)) {
+        if ($_lexer->eoi || (! $token)) {
             # no more tokens; jump out of the loop
             last;
         }
@@ -115,7 +178,8 @@ sub _process {
     }
 
     # return the both the processed and unprocessed parts
-    my $unprocessed = substr $string, $lexer->offset;
+    my $unprocessed = substr $string, $_lexer->offset;
+    $_lexer->start('INITIAL');
     return ($processed, $unprocessed);
 }
 
@@ -125,49 +189,12 @@ Decoder for decoding safename.  See module L<Encode::Encoding>.
 
 =cut
 
-# lexer for decoding
-my $decode_lexer = Parse::Lex->new(
-    # uppercase characters
-    D_UPPER => (
-        '\{[a-z]+\}',
-        sub {
-            my $text = $_[1];
-            $text =~ s/\{(.*)\}/$1/;
-            return uc $text;
-        },
-    ),
-
-    # spaces
-    D_SPACES => (
-        '_+',
-        sub {
-            my $text = $_[1];
-            $text =~ tr/_/ /;
-            return $text;
-        },
-    ),
-
-    # safe characters
-    D_SAFE => '[a-z0-9\-+!\$%&\'@~#.,^]+',
-
-    # other characters
-    D_OTHER => (
-        '\([0-9a-f]+\)',
-        sub {
-            my $text = $_[1];
-            $text =~ s/\((.*)\)/$1/;
-            return pack('U', oct('0x' . $text));
-        },
-    ),
-);
-$decode_lexer->skip('');
-
 sub decode {
     # process arguments
     my ($self, $string, $check) = @_;
 
     # apply the lexer for decoding to the string and return the result
-    my ($processed, $unprocessed) = $self->_process($decode_lexer, $string);
+    my ($processed, $unprocessed) = $self->_process($string, COND_DECODE);
     $_[1] = $unprocessed if $check;
     return $processed;
 }
@@ -178,45 +205,12 @@ Encoder for encoding safename.  See module L<Encode::Encoding>.
 
 =cut
 
-# lexer for encoding
-my $encode_lexer = Parse::Lex->new(
-    # uppercase characters
-    E_UPPER => (
-        '[A-Z]+',
-        sub {
-            return '{' . lc $_[1] . '}';
-        },
-    ),
-
-    # spaces
-    E_SPACES => (
-        ' +',
-        sub {
-            my $text = $_[1];
-            $text =~ tr/ /_/;
-            return $text;
-        },
-    ),
-
-    # safe characters
-    E_SAFE => '[a-z0-9\-+!\$%&\'@~#.,^]+',
-
-    # other characters
-    E_OTHER => (
-        '.',
-        sub {
-            return '(' . sprintf('%x', unpack('U', $_[1])) . ')';
-        },
-    ),
-);
-$encode_lexer->skip('');
-
 sub encode {
     # process arguments
     my ($self, $string, $check) = @_;
 
     # apply the lexer for encoding to the string and return the result
-    my ($processed, $unprocessed) = $self->_process($encode_lexer, $string);
+    my ($processed, $unprocessed) = $self->_process($string, COND_ENCODE);
     $_[1] = $unprocessed if $check;
     return $processed;
 }
