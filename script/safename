@@ -8,35 +8,27 @@ use Encode qw(decode encode);
 use Encode::Safename;
 use File::Basename;
 use File::Find;
-use Getopt::Std;
-
-# constants
-use constant CMD_ENCODE => 'encode';
-use constant CMD_DECODE => 'decode';
+use Getopt::Long;
 
 # process options from the command line
-my %options;
-getopts('edrtv', \%options);
+my $encode = 0;
+my $decode = 0;
+my $recursive =0;
+my $testmode = 0;
+my $verbose = 0;
 
-# process the command
-my $command;
-if ($options{'e'}) {
-    # encode
-    $command = CMD_ENCODE;
-}
-elsif ($options{'d'}) {
-    # decode
-    $command = CMD_DECODE;
-}
-else {
+GetOptions(
+    'encode'    => \$encode,
+    'decode'    => \$decode,
+    'recursive' => \$recursive,
+    'test'      => \$testmode,
+    'verbose'   => \$verbose,
+);
+
+unless ($encode || $decode) {
     # missing command
     die "missing command\n";
 }
-
-# process flags
-my $recursive = $options{'r'};
-my $testmode = $options{'t'};
-my $verbose = $options{'v'};
 
 sub _rename {
     # process arguments
@@ -49,13 +41,13 @@ sub _rename {
 
     my $new;
 
-    if ($command eq CMD_ENCODE) {
+    if ($encode) {
         # try to encode the filename
         $new = encode('safename', $filename, 1);
         die "can't encode '$filename'" if $filename;
         $new = "$directory/$new";
     }
-    elsif ($command eq CMD_DECODE) {
+    elsif ($decode) {
         # try to decode the filename
         $new = decode('safename', $filename, 1);
         die "can't decode '$filename'" if $filename;
@@ -111,15 +103,16 @@ version 0.01
 
 =head1 SYNOPSIS
 
-    safename (-d | -e) [-r] [-t] [-v] [files or directories]
+    safename (--decode | --encode) [--recursive] [--test]
+             [--verbose] [files or directories]
 
 =head1 OPTIONS
 
-    -d    decode from safe filenames
-    -e    encode to safe filenames
-    -r    rename files recursively
-    -t    don't actually rename files
-    -v    print all renamed files
+    --decode, -d       decode from safe filenames
+    --encode, -e       encode to safe filenames
+    --recursive, -r    rename files recursively
+    --test, -t         don't actually rename files
+    --verbose, -v      print all renamed files
 
 =head1 EXAMPLES
 
