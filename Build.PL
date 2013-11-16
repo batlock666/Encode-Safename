@@ -8,6 +8,7 @@ my $builder = Module::Build->new(
     license             => 'perl',
     dist_author         => q{Bert Vanderbauwhede <batlock666@gmail.com>},
     dist_version_from   => 'lib/Encode/Safename.pm',
+    dist_abstract       => 'An encoding for safe filenames.',
     build_requires => {
         'Test::More' => 0,
     },
