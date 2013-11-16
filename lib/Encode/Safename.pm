@@ -100,11 +100,11 @@ L<http://search.cpan.org/dist/Encode-Safename/>
 Copyright 2013 Bert Vanderbauwhede.
 
 This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-See http://dev.perl.org/licenses/ for more information.
-
+See http://www.gnu.org/licenses/ for more information.
 
 =cut
 
