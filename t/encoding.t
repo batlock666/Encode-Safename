@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 22;
+use Test::More tests => 24;
 
 use Encode qw(encode decode);
 use Encode::Safename;
@@ -68,3 +68,9 @@ is(encode('safename', 'Abc Déf Gh1'), '{a}bc_{d}(e9)f_{g}h1',
 
 is(decode('safename', '{a}bc_{d}(e9)f_{g}h1'), 'Abc Déf Gh1',
     'decode a string');
+
+# fix characters
+is(decode('safename', 'ABC'), 'abc',
+    'decode string with uppercase characters');
+is(decode('safename', '{ABC}'), 'ABC',
+    'decode string with uppercase characters');

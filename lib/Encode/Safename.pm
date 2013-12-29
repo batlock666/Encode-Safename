@@ -193,6 +193,9 @@ sub decode {
     # process arguments
     my ($self, $string, $check) = @_;
 
+    # fix characters
+    $string = lc $string;
+
     # apply the lexer for decoding to the string and return the result
     my ($processed, $unprocessed) = $self->_process($string, COND_DECODE);
     $_[1] = $unprocessed if $check;
