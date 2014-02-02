@@ -35,6 +35,11 @@ sub _rename {
     my $old = shift;
     $old = decode('utf-8', $old);
 
+    # skip non-existent files
+    if (! -e $old) {
+        return;
+    }
+
     # split into directory and filename
     my $filename = basename($old);
     my $directory = dirname($old);
