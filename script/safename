@@ -17,7 +17,15 @@ my ($opt, $usage) = describe_options(
     [ 'recursive|r' => 'rename files recursively' ],
     [ 'test|t'      => 'don\'t actually rename files' ],
     [ 'verbose|v'   => 'print all renamed files' ],
+    [],
+    [ 'help|h'      => 'print help text' ],
 );
+
+# print the help text
+if ($opt->help) {
+    print $usage->text;
+    exit;
+}
 
 # process options from the command line
 my $encode    = $opt->encode;
@@ -109,16 +117,17 @@ version 0.01
 
 =head1 SYNOPSIS
 
-    safename (--decode | --encode) [--recursive] [--test]
-             [--verbose] [files or directories]
+    safename [-dehrtv] [long options...] FILES
 
 =head1 OPTIONS
 
-    --decode, -d       decode from safe filenames
-    --encode, -e       encode to safe filenames
-    --recursive, -r    rename files recursively
-    --test, -t         don't actually rename files
-    --verbose, -v      print all renamed files
+    -e --encode      encode to safe filenames
+    -d --decode      decode from safe filenames
+    -r --recursive   rename files recursively
+    -t --test        don't actually rename files
+    -v --verbose     print all renamed files
+
+    -h --help        print help text
 
 =head1 EXAMPLES
 
