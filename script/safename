@@ -8,22 +8,23 @@ use Encode qw(decode encode);
 use Encode::Safename;
 use File::Basename;
 use File::Find;
-use Getopt::Long;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c %o FILES',
+    [ 'encode|e'    => 'encode to safe filenames' ],
+    [ 'decode|d'    => 'decode from safe filenames' ],
+    [ 'recursive|r' => 'rename files recursively' ],
+    [ 'test|t'      => 'don\'t actually rename files' ],
+    [ 'verbose|v'   => 'print all renamed files' ],
+);
 
 # process options from the command line
-my $encode = 0;
-my $decode = 0;
-my $recursive =0;
-my $testmode = 0;
-my $verbose = 0;
-
-GetOptions(
-    'encode'    => \$encode,
-    'decode'    => \$decode,
-    'recursive' => \$recursive,
-    'test'      => \$testmode,
-    'verbose'   => \$verbose,
-);
+my $encode    = $opt->encode;
+my $decode    = $opt->decode;
+my $recursive = $opt->recursive;
+my $testmode  = $opt->test;
+my $verbose   = $opt->verbose;
 
 unless ($encode || $decode) {
     # missing command

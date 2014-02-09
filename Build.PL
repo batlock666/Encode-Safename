@@ -14,9 +14,10 @@ my $builder = Module::Build->new(
         'Test::More' => 0,
     },
     requires => {
-        'Encode::Encoding' => 0,
-        'Parse::Lex'       => 0,
-        'perl'             => 5.006,
+        'Encode::Encoding'          => 0,
+        'Getopt::Long::Descriptive' => 0,
+        'Parse::Lex'                => 0,
+        'perl'                      => 5.006,
     },
     add_to_cleanup      => [ 'Encode-Safename-*' ],
     create_makefile_pl => 'traditional',
