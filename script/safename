@@ -12,13 +12,17 @@ use Getopt::Long::Descriptive;
 
 my ($opt, $usage) = describe_options(
     '%c %o FILES',
-    [ 'encode|e'    => 'encode to safe filenames' ],
-    [ 'decode|d'    => 'decode from safe filenames' ],
+    [ 'command'     => hidden => {
+        required => 1,
+        one_of   => [
+            [ 'encode|e' => 'encode to safe filenames' ],
+            [ 'decode|d' => 'decode from safe filenames' ],
+            [ 'help|h'   => 'print help text' ],
+        ],
+    }],
     [ 'recursive|r' => 'rename files recursively' ],
     [ 'test|t'      => 'don\'t actually rename files' ],
     [ 'verbose|v'   => 'print all renamed files' ],
-    [],
-    [ 'help|h'      => 'print help text' ],
 );
 
 # print the help text
@@ -28,16 +32,10 @@ if ($opt->help) {
 }
 
 # process options from the command line
-my $encode    = $opt->encode;
-my $decode    = $opt->decode;
+my $command   = $opt->command;
 my $recursive = $opt->recursive;
 my $testmode  = $opt->test;
 my $verbose   = $opt->verbose;
-
-unless ($encode || $decode) {
-    # missing command
-    die "missing command\n";
-}
 
 sub _rename {
     # process arguments
@@ -55,13 +53,13 @@ sub _rename {
 
     my $new;
 
-    if ($encode) {
+    if ($command eq 'encode') {
         # try to encode the filename
         $new = encode('safename', $filename, 1);
         die "can't encode '$filename'" if $filename;
         $new = "$directory/$new";
     }
-    elsif ($decode) {
+    elsif ($command eq 'decode') {
         # try to decode the filename
         $new = decode('safename', $filename, 1);
         die "can't decode '$filename'" if $filename;
@@ -123,11 +121,10 @@ version 0.03
 
     -e --encode      encode to safe filenames
     -d --decode      decode from safe filenames
+    -h --help        print help text
     -r --recursive   rename files recursively
     -t --test        don't actually rename files
     -v --verbose     print all renamed files
-
-    -h --help        print help text
 
 =head1 EXAMPLES
 
