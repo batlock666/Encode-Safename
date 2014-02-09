@@ -265,7 +265,7 @@ Based on the module safefilename from Torsten Bronger's Bobcat project
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2013 Bert Vanderbauwhede.
+Copyright 2014 Bert Vanderbauwhede.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
