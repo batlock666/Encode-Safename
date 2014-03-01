@@ -25,17 +25,17 @@ my ($opt, $usage) = describe_options(
     [ 'verbose|v'   => 'print all renamed files' ],
 );
 
-# print the help text
-if ($opt->help) {
-    print $usage->text;
-    exit;
-}
-
 # process options from the command line
 my $command   = $opt->command;
 my $recursive = $opt->recursive;
 my $testmode  = $opt->test;
 my $verbose   = $opt->verbose;
+
+# print the help text
+if ($command eq 'help') {
+    print $usage->text;
+    exit;
+}
 
 sub _rename {
     # process arguments
