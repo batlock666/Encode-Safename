@@ -10,6 +10,7 @@ my $builder = Module::Build->new(
     dist_author         => q{Bert Vanderbauwhede <batlock666@gmail.com>},
     dist_version_from   => 'lib/Encode/Safename.pm',
     dist_abstract       => 'An encoding for safe filenames.',
+    release_status      => 'stable',
     configure_requires => {
         'Module::Build' => 0,
     },
