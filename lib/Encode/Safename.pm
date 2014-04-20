@@ -2,7 +2,7 @@ package Encode::Safename;
 
 use 5.006;
 use strict;
-use warnings;
+use warnings FATAL => 'all';
 use utf8;
 
 use Parse::Lex;
