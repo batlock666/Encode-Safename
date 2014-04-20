@@ -17,7 +17,6 @@ my $builder = Module::Build->new(
         'Encode::Encoding'          => 0,
         'Getopt::Long::Descriptive' => 0,
         'Parse::Lex'                => 0,
-        'perl'                      => 5.006,
     },
     add_to_cleanup      => [ 'Encode-Safename-*' ],
     create_makefile_pl => 'traditional',
