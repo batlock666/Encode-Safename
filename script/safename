@@ -10,7 +10,7 @@ use File::Basename;
 use File::Find;
 use Getopt::Long::Descriptive;
 
-my ($opt, $usage) = describe_options(
+my ($options, $usage) = describe_options(
     '%c %o FILES',
     [ 'command'     => hidden => {
         required => 1,
@@ -26,10 +26,10 @@ my ($opt, $usage) = describe_options(
 );
 
 # process options from the command line
-my $command   = $opt->command;
-my $recursive = $opt->recursive;
-my $testmode  = $opt->test;
-my $verbose   = $opt->verbose;
+my $command   = $options->command;
+my $recursive = $options->recursive;
+my $testmode  = $options->test;
+my $verbose   = $options->verbose;
 
 # print the help text
 if ($command eq 'help') {
