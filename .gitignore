@@ -19,8 +19,10 @@ Build
 !Build/
 Build.bat
 .last_cover_stats
+/LICENSE
 /Makefile
 /Makefile.old
+/Makefile.PL
 /MANIFEST.bak
 /META.yml
 /META.json
