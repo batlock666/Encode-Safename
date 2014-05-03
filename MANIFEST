@@ -9,3 +9,7 @@ t/encoding.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
+Makefile.PL
+LICENSE
+META.yml
+META.json
